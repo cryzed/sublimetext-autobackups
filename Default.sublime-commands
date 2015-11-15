@@ -1,3 +1,4 @@
 [
-    { "caption": "AutoBackups: Open file backup", "command": "auto_backups_open_backup" }
+    { "caption": "AutoBackups: Open file backup", "command": "auto_backups_open_backup" },
+    { "caption": "AutoBackups: Restore folder", "command": "auto_backups_restore_folder" }
 ]

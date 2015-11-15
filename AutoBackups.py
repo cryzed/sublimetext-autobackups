@@ -40,10 +40,12 @@ try:
     # Python 3
     from AutoBackups.autobackups import reloader
     from AutoBackups.autobackups.paths_helper import PathsHelper
+    from AutoBackups.autobackups.restore_folder import restore_folder
 except (ImportError):
     # Python 2
     import autobackups.reloader
     from autobackups.paths_helper import PathsHelper
+    from autobackups.restore_folder import restore_folder
 
 
 def plugin_loaded():
@@ -466,6 +468,26 @@ class AutoBackupsGcBackup(threading.Thread):
         else:
             raise
 
+
+class AutoBackupsRestoreFolderCommand(sublime_plugin.WindowCommand):
+    DIALOG_TEXT = (
+        'Are you really sure you want to restore: "%s"?'
+        '\n'
+        '\n'
+        'This action is not easily revertable: Unsaved changes might be lost and deleted files and folders may '
+        'reappear. It is recommended to make a backup of the folder beforehand.'
+    )
+
+    def run(self):
+        path = self.window.active_view().file_name()
+
+        recover_path = os.path.dirname(path) if path else self.window.folders()[0]
+        normalized_path = PathsHelper.normalise_path(recover_path)
+        backups_path = PathsHelper.get_base_dir(True)
+
+        confirmation = sublime.ok_cancel_dialog(self.DIALOG_TEXT % recover_path)
+        if confirmation:
+            restore_folder(backups_path, normalized_path, recover_path)
 
 
 class AutoBackupsDonateCommand(sublime_plugin.WindowCommand):
